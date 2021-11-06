@@ -1,0 +1,16 @@
+pipeline {
+  agent any
+  stages {
+    stage('Stage 1') {
+      input {
+        message "What do you want to say?"
+        parameters {
+          string(name: 'SAY', defaultValue: 'Hello Mundo!', description: 'Say?')
+        }
+      }
+      steps {
+        echo "${SAY}"
+      }
+    }
+  }
+}

@@ -1,0 +1,15 @@
+pipeline {
+  agent {
+    dockerfile {
+      dir './jenkins/demo/04'
+    }
+  }
+  stages {
+    stage('Build') {
+      steps {
+        sh 'node --version'
+        sh 'svn --version'
+      }
+    }
+  }
+}

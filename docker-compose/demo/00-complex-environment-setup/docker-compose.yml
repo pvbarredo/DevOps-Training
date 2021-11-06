@@ -1,0 +1,15 @@
+
+version: "3"
+
+services:
+  training-complex-environment-setup:
+    image: training/complex-environment-setup
+    container_name: training-complex-environment-setup
+    build:
+      context: .
+      dockerfile: ${BUILD_DOCKERFILE}
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_PASSWORD: password
+    network_mode: bridge

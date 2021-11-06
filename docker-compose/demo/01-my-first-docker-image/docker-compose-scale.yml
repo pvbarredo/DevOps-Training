@@ -1,0 +1,51 @@
+
+version: "3"
+
+networks:
+  training-network:
+
+volumes:
+  training-volume:
+    
+services:
+  loadbalancer:
+    image: nginx:1.15-alpine
+    container_name: training-loadbalancer
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+    ports:
+      - "8080:8080"
+    networks:
+      - training-network
+    depends_on:
+      - app
+
+  database:
+    image: mysql:5.6
+    container_name: training-db
+    command: --default-authentication-plugin=mysql_native_password
+    volumes:
+      - training-volume:/var/lib/mysql
+    networks:
+      - training-network
+    environment:
+      MYSQL_DATABASE: heya
+      MYSQL_USER: heya
+      MYSQL_PASSWORD: heyapassword
+      MYSQL_ROOT_PASSWORD: heyarootpassword
+
+  app:
+    image: training/my-first-docker-image
+    # container_name: training-my-first-docker-image
+    build:
+      context: .
+    environment:
+      MYSQL_HOST: training-db
+      MYSQL_DB: heya
+      MYSQL_USER: heya
+      MYSQL_PASSWORD: heyapassword
+    networks:
+      - training-network
+    depends_on:
+      - database
+    scale: 3

@@ -1,0 +1,144 @@
+---
+- name: 'Build and package the application'
+  hosts: localhost
+
+  vars_prompt:
+    - name: docker_hub_username
+      prompt: What is your Docker Hub username?
+      private: no
+
+    - name: docker_hub_password
+      prompt: What is your Docker Hub password?
+      private: yes
+
+  # Uncomment this if using python 2.7
+  # pre_tasks:
+  #   - name: 'Update apt cache'
+  #     become: true
+  #     ansible.builtin.apt:
+  #       update_cache: yes
+  #       cache_valid_time: 3600
+  #
+  #   - name: 'Install required packages for docker management using Ansible'
+  #     become: true
+  #     ansible.builtin.apt:
+  #       state: present
+  #       name:
+  #         - python-docker
+
+  tasks:
+    - name: 'Perform Maven clean and compile'
+      ansible.builtin.shell: cd app && mvn clean package
+
+    - name: 'Create a docker image for app'
+      community.docker.docker_image:
+        name: training/aws-demo-app
+        build:
+          path: app
+        source: build
+        state: present
+        force_source: yes
+        force_tag: yes
+      register: docker_build_result
+
+    - name: 'Login to Docker Hub'
+      community.docker.docker_login:
+        username: "{{ docker_hub_username }}"
+        password: "{{ docker_hub_password }}"
+      register: docker_hub_login_result
+      when: publish_to_dockerhub and docker_build_result is success
+
+    - name: 'Tag and push to docker hub'
+      community.docker.docker_image:
+        name: training/aws-demo-app
+        repository: junoonb/aws-demo-app
+        push: yes
+        source: local
+        force_tag: yes
+      when: publish_to_dockerhub and docker_build_result is success and docker_hub_login_result is success
+
+    - name: 'Logout of Docker Hub'
+      community.docker.docker_login:
+        state: absent
+      when: publish_to_dockerhub
+
+
+- name: 'Install docker to app nodes'
+  hosts: app
+  become: true
+
+  pre_tasks:
+    - name: 'Update apt cache'
+      ansible.builtin.apt:
+        update_cache: yes
+        cache_valid_time: 3600
+
+    - name: 'Install required packages for apt repository management using Ansible'
+      ansible.builtin.apt:
+        state: present
+        name:
+          - python3-psycopg2
+          - python3-docker
+
+  tasks:
+    - name: 'Add required apt repository keys'
+      ansible.builtin.apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+
+    - name: 'Add required apt repository url'
+      ansible.builtin.apt_repository:
+        repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable"
+        state: present
+
+    - name: 'Update apt cache'
+      ansible.builtin.apt:
+        update_cache: yes
+        cache_valid_time: 3600
+
+    - name: 'Install apt packages'
+      ansible.builtin.apt:
+        state: present
+        name:
+          - docker-ce
+
+- name: 'Create "heya" database schema'
+  hosts: localhost
+
+  tasks:
+    - name: 'Populate the database'
+      community.postgresql.postgresql_query:
+        db: "{{ db_name }}"
+        login_host: "{{ db_host }}"
+        login_user: "{{ db_username }}"
+        login_password: "{{ db_password }}"
+        path_to_script: db/create-table.sql
+        encoding: UTF-8
+      # when: is_new_db is changed
+      ignore_errors: true
+
+- name: 'Deploy the application'
+  hosts: app
+
+  tasks:
+    - name: 'Run the app'
+      become: true
+      community.docker.docker_container:
+        name: training-aws-demo-app
+        image: junoonb/aws-demo-app
+        pull: yes
+        state: started
+        restart: yes
+        ports:
+          - "8080:8080"
+        log_driver: "awslogs"
+        log_options:
+          awslogs-group: training-aws-demo-app
+          awslogs-region: us-east-1
+          awslogs-create-group: true
+        env:
+          DATABASE_HOST: "{{ db_host }}"
+          DATABASE_PORT: "{{ db_port|quote }}"
+          DATABASE_NAME: "{{ db_name }}"
+          DATABASE_USERNAME: "{{ db_username }}"
+          DATABASE_PASSWORD: "{{ db_password }}"

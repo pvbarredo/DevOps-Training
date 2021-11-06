@@ -1,0 +1,13 @@
+---
+- name: 'Create helloworld DB'
+  hosts: db
+  become: true
+
+  vars:
+    db_name: helloworld
+    db_username: helloworld
+    db_password: helloworld
+    
+
+  roles:
+  - onb.createdb

@@ -1,0 +1,27 @@
+pipeline {
+  agent none
+  stages {
+    stage('Parallel Stage') {
+      parallel {
+        stage('Parallel Stage 1') {
+          agent {
+            label 'jenkins-agent-1'
+          }
+          steps {
+              echo 'Parallel Stage 1'
+              sleep time: 20, unit: 'SECONDS'
+          }
+        }
+        stage('Parallel Stage 2') {
+          agent {
+            label 'jenkins-agent-2'
+          }
+          steps {
+              echo 'Parallel Stage 2'
+              sleep time: 20, unit: 'SECONDS'
+          }
+        }
+      }
+    }
+  }
+}

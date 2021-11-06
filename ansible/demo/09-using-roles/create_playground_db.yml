@@ -1,0 +1,13 @@
+---
+- name: 'Create playground DB'
+  hosts: db
+  become: true
+
+  vars:
+    db_name: playground
+    db_username: playground
+    db_password: playground
+
+
+  roles:
+  - onb.createdb

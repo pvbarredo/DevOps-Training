@@ -1,0 +1,14 @@
+---
+- hosts: localhost
+  gather_facts: false
+
+  vars:
+    name: Calen
+
+  vars_prompt:
+    - name: filename
+      prompt: File include/import
+      private: no
+
+  tasks:
+    - ansible.builtin.include_tasks: "{{ filename }}.yml"

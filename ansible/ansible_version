@@ -1,0 +1,6 @@
+ansible 2.9.26
+  config file = /etc/ansible/ansible.cfg
+  ansible python module location = /usr/lib/python2.7/dist-packages/ansible
+  executable location = /usr/bin/ansible
+  python version = 2.7.17 [GCC 7.5.0]
+

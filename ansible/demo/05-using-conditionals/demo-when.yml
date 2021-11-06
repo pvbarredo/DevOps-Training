@@ -1,0 +1,29 @@
+---
+- hosts: localhost
+  gather_facts: false
+
+  tasks:
+
+    - command: echo "Executed"
+      when: 1 != 0
+    - command: echo "Executed"
+      when: 5 < 10
+    - command: echo "Executed"
+      when: "'hello' in 'hello world'"
+    - command: echo "Executed"
+      when: "'a' in 'a.b.c'.split('.')"
+    - command: echo "Executed"
+      when: "3 in [1, 2, 3, 4, 5]"
+    - command: echo "Executed"
+      when: "('a' in 'abc') and ('m' not in 'xyz')"
+
+    - command: echo "Executed"
+      when: 1 == 0
+    - command: echo "Executed"
+      when: 5 > 10
+    - command: echo "Executed"
+      when: "'John' in 'Jane Doe'"
+    - command: echo "Executed"
+      when: "10 in [1, 2, 3, 4, 5]"
+    - command: echo "Executed"
+      when: "'abc' == 'abc'.upper()"

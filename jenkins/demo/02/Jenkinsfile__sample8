@@ -1,0 +1,16 @@
+pipeline {
+  agent any
+  options {
+    buildDiscarder logRotator(numToKeepStr: '3')
+    timeout time:10, unit: 'SECONDS'
+    retry 3
+  }
+  stages {
+    stage('Stage 1') {
+      steps {
+          echo 'Running'
+          // error("Forcefully fail the build")
+      }
+    }
+  }
+}

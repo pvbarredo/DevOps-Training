@@ -1,0 +1,8 @@
+---
+- hosts: localhost
+  gather_facts: false
+
+  tasks:
+    - ansible.builtin.include_tasks: external-tasks.yml
+      vars:
+        name: Calen

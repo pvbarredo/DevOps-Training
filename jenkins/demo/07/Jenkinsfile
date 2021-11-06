@@ -1,0 +1,31 @@
+pipeline {
+  agent any
+  environment {
+    DOCKER_IMAGE_NAME = "junoonb/k8s-deploy-sample"
+  }
+  stages {
+    stage('Install Ansible Kubernetes Plugin') {
+      steps {
+        sh 'ansible-galaxy collection install community.kubernetes'
+      }
+    }
+    stage('Build and Publish Docker Image') {
+      steps {
+        script {
+          def dockerImage = docker.build("${DOCKER_IMAGE_NAME}:${env.BUILD_ID}", './jenkins/demo/07')
+          docker.withRegistry( '', 'docker-hub') {
+              dockerImage.push()
+              dockerImage.push('latest')
+          }
+        }
+      }
+    }
+    stage('Deploy') {
+      steps {
+        withKubeConfig([credentialsId: 'minikube', serverUrl: 'https://192.168.49.2:8443']) {
+          ansiblePlaybook disableHostKeyChecking: true, installation: 'ansible', inventory: './jenkins/demo/07/hosts', playbook: './jenkins/demo/07/k8s-deploy.yml'
+        }
+      }
+    }
+  }
+}

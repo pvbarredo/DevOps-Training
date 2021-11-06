@@ -1,0 +1,20 @@
+---
+- hosts: localhost
+  gather_facts: false
+
+  tasks:
+
+    - name: 'Example 1'
+      ansible.builtin.command: ls -al
+      failed_when: false
+
+    - name: 'Example 2'
+      ansible.builtin.set_fact:
+        is_true: "{{ 2 | random }} == 1"
+      failed_when: is_true
+
+      # For Ansible version >=2.12 use:
+      # failed_when: is_true | bool
+
+    - name: 'Should not execute if previous task fails'
+      ansible.builtin.command: echo "Should not execute if previous task fails"

@@ -1,0 +1,44 @@
+
+version: "3"
+
+networks:
+  training-network:
+
+volumes:
+  training-volume:
+
+services:
+
+  database:
+    image: mysql:5.6
+    container_name: training-db
+    command: --default-authentication-plugin=mysql_native_password
+    volumes:
+      - training-volume:/var/lib/mysql
+    networks:
+      - training-network
+    environment:
+      MYSQL_DATABASE: heya
+      MYSQL_USER: heya
+      MYSQL_PASSWORD: heyapassword
+      MYSQL_ROOT_PASSWORD: heyarootpassword
+
+  app:
+    image: junoonb/training-deploy-to-aws-ecs
+    container_name: training-deploy-to-aws-ecs
+    build:
+      context: .
+    environment:
+      MYSQL_HOST: database
+      MYSQL_DB: heya
+      MYSQL_USER: heya
+      MYSQL_PASSWORD: heyapassword
+    ports:
+      - target: 3000
+        x-aws-protocol: http
+    networks:
+      - training-network
+    depends_on:
+      - database
+    deploy:
+      replicas: 2

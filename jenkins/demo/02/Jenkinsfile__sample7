@@ -1,0 +1,27 @@
+pipeline {
+  agent any
+  environment {
+    ENV_VAR_1 = "env_var_1"
+  }
+  stages {
+    stage('Stage 1') {
+      steps {
+          sh 'printenv'
+      }
+    }
+    stage('Stage 2') {
+      environment {
+        ENV_VAR_2 = "env_var_2"
+      }
+      steps {
+          sh 'printenv'
+          echo "ENV_VAR_2=$ENV_VAR_2"
+      }
+    }
+    stage('Stage 3') {
+      steps {
+          sh 'printenv'
+      }
+    }
+  }
+}

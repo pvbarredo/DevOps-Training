@@ -1,0 +1,7 @@
+---
+- hosts: dev01
+
+  tasks:
+    - command: echo "hello world"
+      register: foo_bar
+    - command: echo {{ foo_bar.stdout }}

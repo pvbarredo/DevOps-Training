@@ -1,0 +1,10 @@
+---
+- name: 'Install required packages for apt repository management using Ansible'
+  apt:
+    state: present
+    name:
+      - python-apt
+      - python-pycurl
+      - python-psycopg2
+      - python3-psycopg2
+      - libpq-dev

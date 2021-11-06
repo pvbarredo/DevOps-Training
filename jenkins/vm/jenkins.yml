@@ -1,0 +1,113 @@
+---
+- name: 'Install Jenkins'
+  hosts: jenkins
+  become: yes
+
+  pre_tasks:
+    - name: 'Install required packages for apt repository management using Ansible'
+      ansible.builtin.apt:
+        state: present
+        name:
+          - python3-apt
+          - python3-pycurl
+
+  tasks:
+    - name: 'Add Jenkins (Official) repository keys'
+      ansible.builtin.apt_key:
+        url: https://pkg.jenkins.io/debian-stable/jenkins.io.key
+        state: present
+
+    - name: 'Add Jenkins (Official) apt repository url'
+      become: yes
+      ansible.builtin.apt_repository:
+        repo: deb https://pkg.jenkins.io/debian-stable binary/
+        state: present
+
+    - name: 'Update apt cache'
+      ansible.builtin.apt:
+        update_cache: yes
+        cache_valid_time: 3600
+
+    - name: 'Install OpenJDK 11 (requirement for Jenkins)'
+      ansible.builtin.apt:
+        state: present
+        name:
+          - openjdk-11-jdk
+
+    - name: 'Install Jenkins apt package'
+      ansible.builtin.apt:
+        state: present
+        name:
+          - jenkins
+
+    - name: 'Start jenkins'
+      ansible.builtin.service:
+        name: jenkins
+        state: started
+
+    - name: 'Check if Jenkins initial password file exists'
+      ansible.builtin.stat:
+        path: /var/lib/jenkins/secrets/initialAdminPassword
+      register: jenkins_initial_admin_pass_file
+
+    - name: 'Collect Jenkins initial admin password'
+      ansible.builtin.command: cat /var/lib/jenkins/secrets/initialAdminPassword
+      register: jenkins_initial_admin_pass
+      when: jenkins_initial_admin_pass_file.stat.exists
+
+    - name: 'Display Jenknis initial admin password'
+      debug: var=jenkins_initial_admin_pass.stdout
+      when: jenkins_initial_admin_pass_file.stat.exists
+
+- name: 'Setup Jenkins and Jenkins Agent for CI/CD workflow'
+  hosts: all
+  become: yes
+
+  pre_tasks:
+    - name: 'Install required packages for apt repository management using Ansible'
+      ansible.builtin.apt:
+        state: present
+        name:
+          - python3-apt
+          - python3-pycurl
+
+  tasks:
+    - name: 'Add Docker (Official) apt repository keys'
+      ansible.builtin.apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+
+    - name: 'Add Docker (Official) apt repository url'
+      ansible.builtin.apt_repository:
+        repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable"
+        state: present
+
+    - name: 'Add Ansible (Official) apt repository url'
+      ansible.builtin.apt_repository:
+        repo: 'ppa:ansible/ansible'
+        state: present
+
+    - name: 'Update apt cache'
+      ansible.builtin.apt:
+        update_cache: yes
+        cache_valid_time: 3600
+
+    - name: 'Install apt packages'
+      ansible.builtin.apt:
+        state: present
+        name:
+          - ansible
+          - docker-ce
+          - openjdk-11-jdk
+          - python3-pip
+
+    - name: 'Install python3 kubernetes module'
+      ansible.builtin.pip:
+        name:
+          - kubernetes
+
+    - name: "Adding existing user '{{ ansible_user }}' to group docker"
+      ansible.builtin.user:
+         name: "{{ ansible_user }}"
+         groups: docker
+         append: yes

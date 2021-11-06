@@ -1,0 +1,53 @@
+---
+- hosts: db
+  gather_facts: false
+  become: true
+
+  handlers:
+    - name: Restart PostgreSQL
+      ansible.builtin.service: name=postgresql state=restarted
+
+  pre_tasks:
+    - name: 'Install required packages for apt repository management using Ansible'
+      ansible.builtin.apt:
+        state: present
+        name:
+          - python-apt
+          - python-pycurl
+          - python-psycopg2
+          - python3-psycopg2
+          - libpq-dev
+
+  tasks:
+    - name: 'Update apt cache (if necessary)'
+      ansible.builtin.apt:
+        update_cache: yes
+        cache_valid_time: 3600
+
+    - name: 'Install PostgreSQL and supporting packages'
+      ansible.builtin.apt:
+        state: present
+        name:
+          - postgresql
+          - postgresql-contrib
+
+    - name: 'Run PostgreSQL service'
+      ansible.builtin.service:
+        name: postgresql
+        state: started
+        enabled: true
+
+    - name: 'Update postgresql.conf to allow remote access'
+      ansible.builtin.lineinfile:
+        path: /etc/postgresql/10/main/postgresql.conf
+        regexp: '^(#*)listen_addresses'
+        line: listen_addresses = '*'
+      notify:
+        - Restart PostgreSQL
+
+    - name: 'Update pg_hba.conf to allow remote access'
+      ansible.builtin.lineinfile:
+        path: /etc/postgresql/10/main/pg_hba.conf
+        line: "host\tall\t\tall\t\t0.0.0.0/0\t\tmd5"
+      notify:
+        - Restart PostgreSQL

@@ -1,0 +1,34 @@
+Vagrant.configure("2") do |config|
+
+  config.vm.box = "ubuntu/bionic64"
+
+  config.vm.synced_folder ".", "/vagrant", disabled: true
+  config.ssh.insert_key = false
+  config.ssh.private_key_path = ["~/.vagrant.d/insecure_private_key", "vagrant_id_rsa"]
+
+  config.vm.provision "file", source: "vagrant_id_rsa.pub", destination: "~/.ssh/authorized_keys"
+  config.vm.provision "shell", inline: "sudo mkdir -p '/root/.ssh'"
+  config.vm.provision "shell", inline: "sudo cp '/home/vagrant/.ssh/authorized_keys' '/root/.ssh/authorized_keys'"
+
+
+  config.vm.provider :virtualbox do |v|
+    v.memory = 1024
+    v.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
+  end
+
+  config.vm.define "jenkins" do |dev|
+    dev.vm.hostname = "jenkins"
+    dev.vm.network :private_network, ip: "192.168.200.100"
+  end
+
+  config.vm.define "jenkins-agent-1" do |dev|
+    dev.vm.hostname = "jenkins-agent-1"
+    dev.vm.network :private_network, ip: "192.168.200.200"
+  end
+
+  config.vm.define "jenkins-agent-2" do |app|
+    app.vm.hostname = "jenkins-agent-2"
+    app.vm.network :private_network, ip: "192.168.200.201"
+  end
+
+end

@@ -1,0 +1,7 @@
+FROM postgres:9.6
+
+# Custom initialization scripts
+COPY ./init-db.sql /docker-entrypoint-initdb.d/01-init-db.sql
+COPY ./init-schema.sql /docker-entrypoint-initdb.d/02-init-schema.sql
+COPY ./V1_0_0__Baseline.sql /docker-entrypoint-initdb.d/03-baseline.sql
+COPY ./V1_0_1__Add_Data.sql /docker-entrypoint-initdb.d/04-add-data.sql

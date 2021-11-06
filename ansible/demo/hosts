@@ -1,0 +1,23 @@
+dev01 ansible_host=192.168.200.10
+dev02 ansible_host=192.168.200.11
+
+app01 ansible_host=192.168.200.101
+app02 ansible_host=192.168.200.102
+app03 ansible_host=192.168.200.103
+
+db    ansible_host=192.168.200.200
+
+[dev]
+dev01
+dev02
+
+[app]
+app01
+app02
+app03
+
+[all:vars]
+ansible_user=vagrant
+ansible_connection=ssh
+ansible_ssh_private_key_file=../vm/vagrant_id_rsa
+ansible_python_interpreter=/usr/bin/python3

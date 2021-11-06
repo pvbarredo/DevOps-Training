@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sample-kube-service-deployment-v2
+  labels:
+    app: sample-kube-service
+spec:
+  replicas: 5
+  selector:
+    matchLabels:
+      app: sample-kube-service
+      version: v2.0.0
+  minReadySeconds: 10
+  template:
+    metadata:
+      labels:
+        app: sample-kube-service
+        version: v2.0.0
+    spec:
+      containers:
+      - name: sample-kube-service
+        image: alcaideredb/sample-kube-service:2.0.0
+        env:
+        - name: KUBE_POD_NAME
+          valueFrom: 
+            fieldRef:
+              fieldPath: metadata.name
+        ports:
+        - containerPort: 8080

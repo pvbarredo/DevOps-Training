@@ -1,0 +1,6 @@
+---
+- hosts: dev01
+  gather_facts: true
+
+  tasks:
+    - command: echo "{{ ansible_user_id }}"

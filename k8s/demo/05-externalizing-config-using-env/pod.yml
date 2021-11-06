@@ -1,0 +1,19 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: demo-printenv
+spec:
+  containers:
+    - name: demo-printenv
+      args:
+        - while true; do echo -en '=====\n'; printenv; sleep 10; done;
+      command:
+        - sh
+        - -c
+      image: busybox
+      env:
+        - name: DEMO_ENV_VAR1
+          value: "demo_env_var1"
+        - name: DEMO_ENV_VAR2
+          value: "demo_env_var2"

@@ -1,0 +1,10 @@
+pipeline {
+  agent any
+  stages {
+    stage('Run a playbook') {
+      steps {
+          ansiblePlaybook disableHostKeyChecking: true, installation: 'ansible', playbook: './jenkins/demo/06/playbook.yml'
+      }
+    }
+  }
+}

@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: sample-kube-service-pod
+  namespace: development
+  labels: 
+    environment_origin: production
+    created_via: manual
+spec:
+  containers:
+  - name: sample-kube-service-container
+    image: alcaideredb/sample-kube-service:1.0.0
+    env:
+    - name: KUBE_POD_NAME
+      valueFrom: 
+        fieldRef:
+          fieldPath: metadata.name
+    ports:
+    - containerPort: 8080
+      protocol: TCP

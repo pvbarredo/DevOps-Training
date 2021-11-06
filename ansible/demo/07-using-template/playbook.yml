@@ -1,0 +1,16 @@
+---
+- hosts: dev01
+  gather_facts: false
+  vars:
+    name: "Calen"
+
+  tasks:
+
+    - name: Copy configuration file to server using a template.
+      ansible.builtin.template:
+        src: hello_world.sh.j2
+        dest: ~/hello_world.sh
+        mode: u+rwx
+
+    - name: Run the hello_world.sh script
+      ansible.builtin.command: ./hello_world.sh

@@ -1,0 +1,134 @@
+---
+# Install all pre-requisite packages
+- name: 'Install required apt packages'
+  hosts: dev
+  become: yes
+
+  pre_tasks:
+    - name: 'Install required packages for apt repository management using Ansible'
+      ansible.builtin.apt:
+        state: present
+        name:
+          - python-apt
+          - python-pycurl
+
+  tasks:
+    - name: 'Add required apt repository keys'
+      ansible.builtin.apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+
+    - name: 'Add required apt repository url'
+      ansible.builtin.apt_repository:
+        repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable"
+        state: present
+
+    - name: 'Update apt cache'
+      ansible.builtin.apt:
+        update_cache: yes
+        cache_valid_time: 3600
+
+    - name: 'Install apt packages'
+      ansible.builtin.apt:
+        state: present
+        name:
+          # - docker-ce (uncomment this after the first run)
+          - docker-ce
+          - curl
+          - git
+          - tree
+          - unzip
+          - wget
+          - zip
+          - zsh
+
+# Install OhMyZSH (https://ohmyz.sh/)
+- name: 'Install oh-my-zsh'
+  hosts: dev
+
+  tasks:
+    - name: 'Change user shell to zsh'
+      ansible.builtin.command: "chsh -s /bin/zsh {{ ansible_user_id }}"
+      become: yes
+      when: ansible_user_shell != "/bin/zsh" and ansible_user_shell != "/usr/bin/zsh"
+
+    - name: 'Check if oh-my-zsh already exists'
+      ansible.builtin.stat:
+        path: "{{ ansible_user_dir }}/.oh-my-zsh"
+      register: ohmyzsh
+
+    - name: 'Download oh-my-zsh install script'
+      ansible.builtin.get_url:
+        url: https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh
+        dest: "{{ ansible_user_dir }}/install_ohmyzsh.sh"
+        mode: 'u+rwx'
+        owner: "{{ ansible_user_id }}"
+      when: ohmyzsh.stat.exists == false
+
+    - name: 'Execute oh-my-zsh installation script'
+      ansible.builtin.command: "{{ ansible_user_dir }}/install_ohmyzsh.sh --unattended"
+      when: ohmyzsh.stat.exists == false
+
+# Install sdkman (https://sdkman.io) package manager for (java, mvn, etc...)
+- name: 'Install sdkman.io'
+  hosts: dev
+
+  tasks:
+    - name: 'Check if sdkman already exists'
+      ansible.builtin.stat:
+        path: "{{ ansible_user_dir }}/.sdkman"
+      register: sdkman
+
+    - name: 'Download sdkman installation script'
+      ansible.builtin.get_url:
+        url: https://get.sdkman.io
+        dest: "{{ ansible_user_dir }}/install_sdkman.sh"
+        mode: 'u+xrw'
+        owner: "{{ ansible_user_id }}"
+      when: sdkman.stat.exists == false
+
+    - name: 'Execute sdkman installation script'
+      ansible.builtin.command: "{{ ansible_user_dir }}/install_sdkman.sh"
+      when: sdkman.stat.exists == false
+
+- name: 'Install Maven 3.3.9 and Java 8.0.222'
+  hosts: dev
+
+  tasks:
+    - name: 'Check if java is already installed'
+      ansible.builtin.shell: "source {{ ansible_user_dir }}/.sdkman/bin/sdkman-init.sh && java -version"
+      register: java_version
+      args:
+        executable: /bin/bash
+      ignore_errors: yes
+      changed_when: false
+
+    - name: 'Check if mvn is already installed'
+      ansible.builtin.shell: "source {{ ansible_user_dir }}/.sdkman/bin/sdkman-init.sh && mvn --version"
+      register: mvn_version
+      args:
+        executable: /bin/bash
+      ignore_errors: yes
+      changed_when: false
+
+    - name: 'Display current Java version'
+      debug:
+        var: java_version
+      when: java_version is success
+
+    - name: 'Display current Maven version'
+      debug:
+        var: mvn_version
+      when: mvn_version is success
+
+    - name: 'Install maven'
+      ansible.builtin.shell: "source {{ ansible_user_dir }}/.sdkman/bin/sdkman-init.sh && sdk install maven 3.3.9"
+      args:
+        executable: /bin/bash
+      when: mvn_version is failed
+
+    - name: 'Install Java'
+      ansible.builtin.shell: "source {{ ansible_user_dir }}/.sdkman/bin/sdkman-init.sh && sdk install java 8.0.292.hs-adpt"
+      args:
+        executable: /bin/bash
+      when: java_version is failed

@@ -1,0 +1,14 @@
+---
+- hosts: dev01
+
+  vars_files:
+    - default-vars.yml
+    - other-vars.yml
+
+  tasks:
+
+    - name: Echo foo_bar
+      command: echo "{{ foo_bar }}"
+
+    - name: Echo foo_bar_2
+      command: echo "{{ foo_bar_2 }}"

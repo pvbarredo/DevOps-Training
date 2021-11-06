@@ -1,0 +1,13 @@
+jenkins         ansible_host=192.168.200.100
+jenkins_agent_1 ansible_host=192.168.200.200
+jenkins_agent_2 ansible_host=192.168.200.201
+
+[jenkin_agent]
+jenkins_agent_1
+jenkins_agent_2
+
+[all:vars]
+ansible_user=vagrant
+ansible_connection=ssh
+ansible_ssh_private_key_file=vagrant_id_rsa
+ansible_python_interpreter=/usr/bin/python3

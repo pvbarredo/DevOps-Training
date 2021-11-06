@@ -1,0 +1,12 @@
+---
+- hosts: all
+
+  tasks:
+    - name: Check free memory
+      ansible.builtin.command: free -m
+
+    - name: Check disk usage
+      ansible.builtin.command: df -h
+
+    - name: Check system information
+      ansible.builtin.command: uname -a

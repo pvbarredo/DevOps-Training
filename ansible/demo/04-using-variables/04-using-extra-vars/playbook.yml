@@ -1,0 +1,5 @@
+---
+- hosts: dev01
+
+  tasks:
+    - command: echo "{{ foo_bar }}"

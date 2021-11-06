@@ -1,0 +1,30 @@
+pipeline {
+  agent any
+  environment {
+    DOCKER_IMAGE_NAME = "junoonb/pingservice"
+  }
+  stages {
+    stage('Build Jar file') {
+      agent {
+        docker {
+          image 'maven:3.8-jdk-8'
+          args '-v $HOME/.m2:/root/.m2'
+          reuseNode true
+        }
+      }
+      steps {
+        sh 'mvn package -f ./jenkins/demo/05/pom.xml'
+      }
+    }
+    stage('Build and Publish Docker Image') {
+      steps {
+        script {
+          def dockerImage = docker.build("${DOCKER_IMAGE_NAME}:${env.BUILD_ID}", './jenkins/demo/05')
+          docker.withRegistry( '', 'docker-hub') {
+              dockerImage.push()
+          }
+        }
+      }
+    }
+  }
+}

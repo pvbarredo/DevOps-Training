@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kube-simple-config
+data:
+  demo_env_var1_value: demo_env_var1 value from ConfigMap
+  demo_env_var2_value: demo_env_var2 value from ConfigMap

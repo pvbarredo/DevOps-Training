@@ -1,0 +1,17 @@
+---
+- hosts: localhost
+  gather_facts: false
+
+  tasks:
+
+    - name: 'Demo how to use ignore_errors'
+      command: expr 1 / 0
+      register: ignore_errors_result
+      ignore_errors: true
+
+    - name: 'Demo how to use ignore_errors'
+      command: expr 1 / 0
+      ignore_errors: false
+
+    - name: 'Should not execute if previous task fails'
+      ansible.builtin.command: echo "Should not execute if previous task fails"

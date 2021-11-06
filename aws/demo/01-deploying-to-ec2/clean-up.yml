@@ -1,0 +1,24 @@
+---
+- name: 'Clean up'
+  hosts: localhost
+  gather_facts: false
+
+  tasks:
+
+    - name: Remove the app/target
+      ansible.builtin.shell: cd app && mvn clean
+
+    - name: Remove docker images
+      community.docker.docker_image:
+        name: training/aws-demo-app
+        state: absent
+
+    - name: Remove docker images
+      community.docker.docker_image:
+        name: junoonb/aws-demo-app
+        state: absent
+
+    - name: Remove app.tar.gz
+      ansible.builtin.file:
+        path: app.tar.gz
+        state: absent

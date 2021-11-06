@@ -1,0 +1,12 @@
+---
+- name: 'Decrypt encrypted content'
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  vars_files:
+    - vars.yml
+
+  tasks:
+    - name: 'Display the value of encrypted_secret'
+      ansible.builtin.debug: var=encrypted_secret

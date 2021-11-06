@@ -1,0 +1,46 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: training-app-deployment
+  namespace: training
+spec:
+  selector:
+    matchLabels:
+      app: training-app
+  template:
+    metadata:
+      labels:
+        app: training-app
+    spec:
+      containers:
+      - name: training-app-container
+        image: junoonb/k8s-deploy-exercise
+        env:
+        - name: DATABASE_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: training-config
+              key: DATABASE_HOST
+        - name: DATABASE_PORT
+          valueFrom:
+            configMapKeyRef:
+              name: training-config
+              key: DATABASE_PORT
+        - name: DATABASE_NAME
+          valueFrom:
+            configMapKeyRef:
+              name: training-config
+              key: DATABASE_NAME
+        - name: DATABASE_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: training-secret
+              key: DATABASE_USERNAME
+        - name: DATABASE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: training-secret
+              key: DATABASE_PASSWORD
+        ports:
+        - containerPort: 8080

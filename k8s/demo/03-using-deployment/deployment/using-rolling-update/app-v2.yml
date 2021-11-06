@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sample-kube-service-deployment
+spec:
+  replicas: 5
+  selector:
+    matchLabels:
+      app: sample-kube-service
+  minReadySeconds: 10
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+  template:
+    metadata:
+      labels:
+        app: sample-kube-service
+    spec:
+      containers:
+      - name: sample-kube-service
+        image: alcaideredb/sample-kube-service:2.0.0
+        env:
+        - name: KUBE_POD_NAME
+          valueFrom: 
+            fieldRef:
+              fieldPath: metadata.name
+        ports:
+        - containerPort: 8080

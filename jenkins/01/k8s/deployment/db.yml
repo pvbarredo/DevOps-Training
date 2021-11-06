@@ -1,0 +1,38 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: training-db
+  namespace: training
+  labels:
+    app: training-db
+spec:
+  containers:
+  - name: training-db
+    image: postgres:9.6
+    env:
+    - name: POSTGRES_DB
+      valueFrom:
+        configMapKeyRef:
+          name: training-config
+          key: DATABASE_NAME
+    - name: POSTGRES_USER
+      valueFrom:
+        secretKeyRef:
+          name: training-secret
+          key: DATABASE_USERNAME
+    - name: POSTGRES_PASSWORD
+      valueFrom:
+        secretKeyRef:
+          name: training-secret
+          key: DATABASE_PASSWORD
+    ports:
+    - containerPort: 5432
+    volumeMounts:
+    - mountPath: /var/lib/postgresql/data
+      name: data
+  volumes:
+  - name: data
+    hostPath:
+      type: Directory
+      path: /data

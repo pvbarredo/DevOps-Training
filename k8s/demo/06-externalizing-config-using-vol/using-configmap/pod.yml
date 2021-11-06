@@ -1,0 +1,21 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: demo-printenv
+spec:
+  containers:
+    - name: demo-printenv
+      args:
+        - while true; do echo -en '\n'; cat /etc/demo/config/demo_env_var1_value; sleep 10; done;
+      command:
+        - sh
+        - -c
+      image: busybox
+      volumeMounts:
+      - name: demo-config
+        mountPath: /etc/demo/config
+  volumes:
+    - name: demo-config
+      configMap:
+        name: kube-simple-config

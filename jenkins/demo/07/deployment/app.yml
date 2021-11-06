@@ -1,0 +1,20 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: training-app-deployment
+  namespace: training
+spec:
+  selector:
+    matchLabels:
+      app: training-app
+  template:
+    metadata:
+      labels:
+        app: training-app
+    spec:
+      containers:
+      - name: training-app-container
+        image: junoonb/k8s-deploy-sample
+        ports:
+        - containerPort: 3000

@@ -1,0 +1,6 @@
+publish_to_dockerhub: true
+db_host: "training-db.cc7svabg5r7k.us-east-1.rds.amazonaws.com"
+db_port: 5432
+db_name: heya
+db_username: postgres
+db_password: trainingdbpassword

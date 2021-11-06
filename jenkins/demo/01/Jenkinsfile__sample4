@@ -1,0 +1,37 @@
+pipeline {
+  agent {
+    label 'jenkins-agent'
+  }
+  stages {
+    stage('Build') {
+      steps {
+        echo 'Build - Step 1'
+        echo 'Build - Step 2'
+        sleep time: 10, unit: 'SECONDS'
+      }
+      post {
+        success {
+          echo 'Build - Success!!!!'
+        }
+        aborted {
+          echo 'Build - Aborted!!!!'
+        }
+      }
+    }
+    stage('Deploy') {
+      steps {
+        echo 'Deploy - Step 1'
+        echo 'Deploy - Step 2'
+        sleep time: 10, unit: 'SECONDS'
+      }
+      post {
+        success {
+          echo 'Build - Success!!!!'
+        }
+        aborted {
+          echo 'Build - Aborted!!!!'
+        }
+      }
+    }
+  }
+}

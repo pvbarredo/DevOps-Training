@@ -1,0 +1,19 @@
+pipeline {
+  agent {
+    label 'jenkins-agent-1'
+  }
+  stages {
+    stage('Build') {
+      steps {
+        echo 'Build - Step 1'
+        echo 'Build - Step 2'
+      }
+    }
+    stage('Deploy') {
+      steps {
+        echo 'Deploy - Step 1'
+        echo 'Deploy - Step 2'
+      }
+    }
+  }
+}

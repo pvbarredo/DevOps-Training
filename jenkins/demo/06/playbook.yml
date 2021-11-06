@@ -1,0 +1,6 @@
+---
+- hosts: localhost
+
+  tasks:
+    - name: 'Say Hello Mundo!'
+      ansible.builtin.command: echo 'Hello Mundo!'
