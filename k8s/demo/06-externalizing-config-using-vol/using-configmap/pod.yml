@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: Pod
 metadata:
-  name: demo-printenv
+  name: demo-printenv-vol
 spec:
   containers:
     - name: demo-printenv

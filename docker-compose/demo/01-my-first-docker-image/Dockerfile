@@ -2,7 +2,7 @@ FROM node:12-alpine
 
 LABEL maintainer="redan.alcaide@orangeandbronze.com"
 
-RUN apk add --no-cache python g++ make
+RUN apk add --no-cache py-pip g++ make
 
 WORKDIR /app
 

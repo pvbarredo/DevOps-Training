@@ -5,6 +5,6 @@ metadata:
   name: training-config
   namespace: training
 data:
-  DATABASE_HOST: 'training-db'
+  DATABASE_HOST: '165.22.245.227'
   DATABASE_PORT: '5432'
   DATABASE_NAME: 'heya'

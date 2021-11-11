@@ -1,1 +1,2 @@
 #!/bin/bash
+docker run -d --name training-exercise-app -p 8080:8080 -e DATABASEHOST training exercise db -e database port 543 -e database name heya -e databaseusername -e databasepassword --network trainingexercvisenetwork trainingexerciseapp

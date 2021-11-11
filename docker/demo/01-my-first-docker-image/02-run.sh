@@ -23,3 +23,4 @@ fi
 # IMPORTANT! RUN THE IMAGE AS CONTAINER!
 echo "Running the image $DOCKER_IMAGE as $DOCKER_CONTAINER container"
 docker run -dp 3000:3000 --name $DOCKER_CONTAINER $DOCKER_IMAGE
+docker run -dp 3000:3000 --name training-my-first-docker-container training/my-first-docker-image

@@ -1,1 +1,54 @@
----
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: exercise-app-deployment
+spec:
+  selector:
+    matchLabels:
+      app: exercise-app-service
+  minReadySeconds: 10
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+  template:
+    metadata:
+      labels:
+        app: exercise-app-service
+    spec:
+      containers:
+      - name: exercise-app-service
+        image: pvbarredo/exercise-app
+        env:
+        - name: KUBE_POD_NAME
+          valueFrom: 
+            fieldRef:
+              fieldPath: metadata.name
+        - name: DATABASE_PORT
+          valueFrom:
+            configMapKeyRef:
+              name: training-config
+              key: DATABASE_PORT
+        - name: DATABASE_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: training-config
+              key: DATABASE_HOST
+        - name: DATABASE_NAME
+          valueFrom:
+            configMapKeyRef:
+              name: training-config
+              key: DATABASE_NAME
+        - name: DATABASE_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: training-secret
+              key: DATABASE_USERNAME
+        - name: DATABASE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: training-secret
+              key: DATABASE_PASSWORD
+        ports:
+        - containerPort: 8080

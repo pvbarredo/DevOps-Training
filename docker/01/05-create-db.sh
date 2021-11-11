@@ -1,1 +1,2 @@
 #!/bin/bash
+docker run -d --name training-exercise-db -p 5432:5432 --network=training-exercise-network -e POSTGRES_PASSWORD=password -e POSTGRES_DB=heya -e POSTGRES_USER=heya -e POSTGRES_PASSWORD=heyapassword -v training-exercise-volume:/var/lib/postgresql/data  postgres:9.6  
