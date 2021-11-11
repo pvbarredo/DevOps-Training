@@ -3,7 +3,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: training-app-deployment
-  namespace: training
+  namespace: training-peter
 spec:
   selector:
     matchLabels:
