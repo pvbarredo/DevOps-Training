@@ -1,7 +1,7 @@
 pipeline {
   agent any
   environment {
-    DOCKER_IMAGE_NAME = "junoonb/pingservice"
+    DOCKER_IMAGE_NAME = "pvbarredo/pingservice"
   }
   stages {
     stage('Build Jar file') {
@@ -20,7 +20,7 @@ pipeline {
       steps {
         script {
           def dockerImage = docker.build("${DOCKER_IMAGE_NAME}:${env.BUILD_ID}", './jenkins/demo/05')
-          docker.withRegistry( '', 'docker-hub') {
+          docker.withRegistry( '', 'peter-dockerhub') {
               dockerImage.push()
           }
         }
