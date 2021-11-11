@@ -3,7 +3,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: training-db
-  namespace: training
+  namespace: training-exercise-jenkins-peter
 spec:
   type: ExternalName
   externalName: 165.22.245.227

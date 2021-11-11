@@ -1,0 +1,45 @@
+---
+- name: 'Deploy to K8s cluster'
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  tasks:
+    - name: 'Apply ns.yml'
+      kubernetes.core.k8s:
+        state: present
+        src: k8s/ns.yml
+    
+    - name: 'Apply config/config.yml'
+      kubernetes.core.k8s:
+        state: present
+        src: k8s/config/config.yml
+
+    - name: 'Apply config/secret.yml'
+      kubernetes.core.k8s:
+        state: present
+        src: k8s/config/secret.yml
+
+    - name: 'Apply deployment/app.yml'
+      kubernetes.core.k8s:
+        state: present
+        src: k8s/deployment/app.yml
+
+    - name: 'Apply service/app.yml'
+      kubernetes.core.k8s:
+        state: present
+        src: k8s/service/app.yml
+
+    - name: 'Apply service/db.yml'
+      kubernetes.core.k8s:
+        state: present
+        src: k8s/service/db.yml
+
+    - name: 'Populate DB'
+      community.postgresql.postgresql_query:
+        db: training-db
+        login_host: 165.22.245.227
+        login_user: heya
+        login_password: heyapassword
+        port: 5432
+        path_to_script: db/create-table.sql

@@ -2,4 +2,4 @@
 kind: Namespace
 apiVersion: v1
 metadata:
-  name: training
+  name: training-exercise-jenkins-peter

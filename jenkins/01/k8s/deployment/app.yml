@@ -3,7 +3,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: training-app-deployment
-  namespace: training
+  namespace: training-exercise-jenkins-peter
 spec:
   selector:
     matchLabels:
@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: training-app-container
-        image: junoonb/k8s-deploy-exercise
+        image: pvbarredo/k8s-deploy-exercise
         env:
         - name: DATABASE_HOST
           valueFrom:

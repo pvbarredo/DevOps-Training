@@ -3,7 +3,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: training-config
-  namespace: training
+  namespace: training-exercise-jenkins-peter
 data:
   DATABASE_HOST: '165.22.245.227'
   DATABASE_PORT: '5432'

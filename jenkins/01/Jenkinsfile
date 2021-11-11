@@ -1,0 +1,33 @@
+pipeline {
+  agent any
+  environment {
+    DOCKER_IMAGE_NAME = "pvbarredo/k8s-deploy-jenkin-exercise"
+  }
+  stages {
+    stage('Install Ansible Kubernetes Plugin') {
+      steps {
+        sh 'ansible-galaxy collection install community.kubernetes'
+        sh 'ansible-galaxy collection install kubernetes.core'
+        sh 'ansible-galaxy collection install community.postgresql'
+      }
+    }
+    stage('Build and Publish Docker Image') {
+      steps {
+        script {
+          def dockerImage = docker.build("${DOCKER_IMAGE_NAME}:${env.BUILD_ID}", './jenkins/01/app')
+          docker.withRegistry( '', 'peter-dockerhub') {
+              dockerImage.push()
+              dockerImage.push('latest')
+          }
+        }
+      }
+    }
+    stage('Deploy') {
+      steps {
+        withKubeConfig([credentialsId: 'do-training-k8s', serverUrl: 'https://9b4095da-14f5-4920-ae50-d7f6a3e8e33e.k8s.ondigitalocean.com']) {
+          ansiblePlaybook disableHostKeyChecking: true, installation: 'ansible', inventory: './jenkins/01/hosts', playbook: './jenkins/01/k8s-deploy.yml'
+        }
+      }
+    }
+  }
+}
