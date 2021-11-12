@@ -1,5 +1,8 @@
 pipeline {
   agent any
+  tools {
+    maven 'maven-3.8.3'
+  }
   environment {
     DOCKER_IMAGE_NAME = "pvbarredo/k8s-deploy-jenkin-exercise"
   }
@@ -11,10 +14,15 @@ pipeline {
         sh 'ansible-galaxy collection install community.postgresql'
       }
     }
+    stage('Build project') {
+      steps {
+        sh 'mvn -f ./jenkins/01/app/pom.xml package package'
+      }
+    }
     stage('Build and Publish Docker Image') {
       steps {
         script {
-          def dockerImage = docker.build("${DOCKER_IMAGE_NAME}:${env.BUILD_ID}", './jenkins/01')
+          def dockerImage = docker.build("${DOCKER_IMAGE_NAME}:${env.BUILD_ID}", './jenkins/01/app')
           docker.withRegistry( '', 'peter-dockerhub') {
               dockerImage.push()
               dockerImage.push('latest')
