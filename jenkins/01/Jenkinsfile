@@ -16,7 +16,7 @@ pipeline {
     }
     stage('Build project') {
       steps {
-        sh 'mvn -f ./jenkins/01/app/pom.xml package package'
+        sh 'mvn -f ./jenkins/01/app/pom.xml package'
       }
     }
     stage('Build and Publish Docker Image') {
