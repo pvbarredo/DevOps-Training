@@ -14,7 +14,7 @@ pipeline {
     stage('Build and Publish Docker Image') {
       steps {
         script {
-          def dockerImage = docker.build("${DOCKER_IMAGE_NAME}:${env.BUILD_ID}", './jenkins/01/app')
+          def dockerImage = docker.build("${DOCKER_IMAGE_NAME}:${env.BUILD_ID}", './jenkins/01')
           docker.withRegistry( '', 'peter-dockerhub') {
               dockerImage.push()
               dockerImage.push('latest')

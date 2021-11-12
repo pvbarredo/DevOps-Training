@@ -35,9 +35,8 @@
         state: present
         src: k8s/service/db.yml
 
-    - name: 'Populate DB'
+    - name: 'Create table in DB'
       community.postgresql.postgresql_query:
-        db: training-db
         login_host: 165.22.245.227
         login_user: heya
         login_password: heyapassword
